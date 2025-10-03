@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -44,3 +45,28 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+=======
+# SpendWise
+
+# React记账本项目
+这是我在学习React过程中的一个项目 -- **个人记账本**
+目标是做一个简易的记账应用
+
+## 功能目标(计划)
+- [ ] 添加账目(收入/支出)
+- [ ] 删除账目
+- [ ] 按日期月份查看账目列表
+- [ ] 简易图标展示收支趋势
+- [ ] 按分类查看
+
+---
+
+## 技术栈
+React
+TypeScript
+Scss
+
+## 项目进度
+目前: 刚起步，搭建中
+计划： 完成的每个功能，我都会更新在这里
+>>>>>>> 4e9205bbae6a570aea703fd62e87981eb761aeee
