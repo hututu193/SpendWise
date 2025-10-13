@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/hututu193/SpendWise.git/static/css/main.0601f3ec.css",
+    "main.js": "/hututu193/SpendWise.git/static/js/main.c23fc90e.js",
+    "index.html": "/hututu193/SpendWise.git/index.html",
+    "main.0601f3ec.css.map": "/hututu193/SpendWise.git/static/css/main.0601f3ec.css.map",
+    "main.c23fc90e.js.map": "/hututu193/SpendWise.git/static/js/main.c23fc90e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0601f3ec.css",
+    "static/js/main.c23fc90e.js"
+  ]
+}
