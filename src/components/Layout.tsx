@@ -10,6 +10,14 @@ const Wrapper = styled.div`
 const Main = styled.div`
   flex-grow: 1;
   overflow: auto;
+  /* 隐藏所有浏览器的滚动条 */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;      /* Firefox */
+  
+  /* Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 // 完整的 Props 类型定义
 type Props = {
@@ -25,7 +33,7 @@ const Layout: React.FC<Props> = (props) => {
       if (mainRef.current && props.scrollTop !== undefined) {
         mainRef.current.scrollTop = props.scrollTop
       }
-    }, 0)
+    }, 100)
   }, [props.scrollTop])
 
   return (

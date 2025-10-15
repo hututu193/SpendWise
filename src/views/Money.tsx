@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useState } from "react";
 
 import { useRecords } from "hooks/useRecords";
-import { TagsSection } from './Money/TagSection';
+import { TagsSection } from './Money/TagsSection';
 import { CategorySection } from './Money/CategorySection';
 import { NoteSection } from './Money/NoteSection';
 import { NumberPadSection } from './Money/NumberPadSection'

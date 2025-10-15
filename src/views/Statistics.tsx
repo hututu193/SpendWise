@@ -1,11 +1,13 @@
 import Layout from '../components/Layout';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { CategorySection } from './Money/CategorySection';
 import styled from 'styled-components';
 import { RecordItem, useRecords } from '../hooks/useRecords';
 import { useTags } from '../hooks/useTags';
 import day from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+
+import { ChartPage } from 'components/ChartPage';
 
 day.extend(utc);
 
@@ -36,30 +38,24 @@ function Statistics() {
     const [category, setCategory] = useState<'-' | '+'>('-');
     const { records } = useRecords();
     const { getName } = useTags();
-    const hash: { [K: string]: RecordItem[] } = {}; // {'2020-05-11': [item, item], '2020-05-10': [item, item], '2020-05-12': [item, item, item, item]}
+    const [selectedMonth, setSelectedMonth] = useState<string>('10'); // 默认10月，与ChartPage一致
+
+    const hash: { [K: string]: RecordItem[] } = {};
+
     const selectedRecords = records.filter(r => r.category === category);
 
-    // 添加调试信息
-    console.log('所有记录:', records);
-    console.log('筛选后的记录:', selectedRecords);
+    // 处理月份变化的函数
+    const handleMonthChange = (month: string) => {
+        console.log('子组件选择的月份:', month);
+        // 确保月份是两位数格式
+        const formattedMonth = month.padStart(2, '0');
+        setSelectedMonth(formattedMonth);
+    };
 
-
-
-
+    // 构建hash数据
     selectedRecords.forEach(r => {
-
-        // const originalDate = r.createdAt;
         const utcDate = day(r.createdAt).utc();
-        // const localDate = day(r.createdAt);
         const key = utcDate.format('YYYY年MM月DD日');
-
-        // console.log('原始时间:', originalDate);
-        // console.log('UTC 时间:', utcDate.format('YYYY-MM-DD HH:mm:ss'));
-        // console.log('本地时间:', localDate.format('YYYY-MM-DD HH:mm:ss'));
-        // console.log('分组键:', key);
-        // console.log('---');
-
-        // const key = day(r.createdAt).utc().format('YYYY年MM月DD日');
         if (!(key in hash)) {
             hash[key] = [];
         }
@@ -73,39 +69,78 @@ function Statistics() {
         return 0;
     });
 
+    console.log('原始数据 array:', array);
+
+    // 根据选择的月份过滤数据
+    const filteredArray = array.filter(([date]) => {
+        // 安全地提取月份
+        const monthPart = date.split('年')[1];
+        if (!monthPart) return false;
+
+        const month = monthPart.split('月')[0];
+        console.log(`日期: ${date}, 提取的月份: ${month}, 选中的月份: ${selectedMonth}`);
+
+        return month === selectedMonth;
+    });
+
+    console.log('过滤后的数据 filteredArray:', filteredArray);
+
+    // 添加调试信息
+    useEffect(() => {
+        console.log('selectedMonth 变化:', selectedMonth);
+        console.log('filteredArray 长度:', filteredArray.length);
+    }, [selectedMonth, filteredArray]);
+
     return (
         <Layout>
             <CategoryWrapper>
                 <CategorySection value={category}
                     onChange={value => setCategory(value)} />
             </CategoryWrapper>
-            {array.map(([date, records]) => <div>
-                <Header>
-                    {date}
-                </Header>
-                <div>
-                    {records.map(r => {
-                        return <Item>
-                            <div className="tags oneLine">
-                                {r.tagIds
-                                    .map(tagId => <span key={tagId}>{getName(tagId)}</span>)
-                                    .reduce((result, span, index, array) =>
-                                        result.concat(index < array.length - 1 ? [span, '，'] : [span]), [] as ReactNode[])
-                                }
+
+            <ChartPage category={category} onChange={handleMonthChange} />
+
+            {/* 显示当前选中的月份 */}
+            <div style={{ padding: '10px 16px', fontSize: '16px', fontWeight: 'bold' }}>
+                当前显示: {selectedMonth}月
+            </div>
+
+            <div>
+                {filteredArray.length > 0 ? (
+                    filteredArray.map(([date, records]) =>
+                        <div key={date}>
+                            <Header>
+                                {date}
+                            </Header>
+                            <div>
+                                {records.map(r => {
+                                    return <Item key={r.createdAt}>
+                                        <div className="tags oneLine">
+                                            {r.tagIds
+                                                .map(tagId => <span key={tagId}>{getName(tagId)}</span>)
+                                                .reduce((result, span, index, array) =>
+                                                    result.concat(index < array.length - 1 ? [span, ', '] : [span]), [] as ReactNode[])
+                                            }
+                                        </div>
+                                        {r.note && <div className="note">
+                                            {r.note}
+                                        </div>}
+                                        <div className="amount">
+                                            ￥{r.amount}
+                                        </div>
+                                    </Item>;
+                                })}
                             </div>
-                            {r.note && <div className="note">
-                                {r.note}
-                            </div>}
-                            <div className="amount">
-                                ￥{r.amount}
-                            </div>
-                        </Item>;
-                    })}
-                </div>
-            </div>)}
+                        </div>
+                    )
+                ) : (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                        {selectedMonth ? `没有找到${selectedMonth}月的数据` : '请选择月份'}
+                    </div>
+                )}
+            </div>
         </Layout>
     );
 }
-
 
 export default Statistics;

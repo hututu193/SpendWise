@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://github.com/hututu193/SpendWise.git",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
@@ -29,6 +30,7 @@
     "dayjs": "^1.11.18",
     "dotenv": "^10.0.0",
     "dotenv-expand": "^5.1.0",
+    "echarts": "^6.0.0",
     "eslint": "^8.3.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-webpack-plugin": "^3.1.1",
@@ -73,7 +75,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -153,6 +157,7 @@
   },
   "devDependencies": {
     "@types/webpack-env": "^1.18.8",
+    "gh-pages": "^6.3.0",
     "svg-sprite-loader": "^6.0.11",
     "svgo-loader": "^4.0.0"
   }

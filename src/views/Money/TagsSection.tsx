@@ -3,6 +3,7 @@ import React from 'react';
 import { useTags } from 'hooks/useTags';
 
 const Wrapper = styled.section`
+    
     flex-grow: 1;
     background: #FFFFFF;
     padding: 12px 16px;
