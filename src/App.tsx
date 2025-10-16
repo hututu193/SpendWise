@@ -15,7 +15,7 @@ import { Tag } from 'views/Tag';
 
 const AppWrapper = styled.div`
   color: #333;
-  /* max-width: 520px;//设置最大宽度 */
+  max-width: 480px;//设置最大宽度
   margin: 0 auto;
   
 `

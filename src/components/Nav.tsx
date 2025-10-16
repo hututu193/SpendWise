@@ -25,7 +25,9 @@ box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
                 stroke: currentColor
             };
             &.selected {
-                color: rgb(250, 221, 17);
+                color: orange;
+                /* #F1C40F; */
+                /* rgb(250, 221, 17); */
                 .icon{
                     stroke: currentColor;;
                 }

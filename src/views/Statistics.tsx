@@ -46,7 +46,7 @@ function Statistics() {
 
     // 处理月份变化的函数
     const handleMonthChange = (month: string) => {
-        console.log('子组件选择的月份:', month);
+        // console.log('子组件选择的月份:', month);
         // 确保月份是两位数格式
         const formattedMonth = month.padStart(2, '0');
         setSelectedMonth(formattedMonth);
@@ -69,7 +69,7 @@ function Statistics() {
         return 0;
     });
 
-    console.log('原始数据 array:', array);
+    // console.log('原始数据 array:', array);
 
     // 根据选择的月份过滤数据
     const filteredArray = array.filter(([date]) => {
@@ -78,18 +78,22 @@ function Statistics() {
         if (!monthPart) return false;
 
         const month = monthPart.split('月')[0];
-        console.log(`日期: ${date}, 提取的月份: ${month}, 选中的月份: ${selectedMonth}`);
+        // console.log(`日期: ${date}, 提取的月份: ${month}, 选中的月份: ${selectedMonth}`);
 
         return month === selectedMonth;
     });
 
-    console.log('过滤后的数据 filteredArray:', filteredArray);
+    // console.log('过滤后的数据 filteredArray:', filteredArray);
 
     // 添加调试信息
     useEffect(() => {
-        console.log('selectedMonth 变化:', selectedMonth);
-        console.log('filteredArray 长度:', filteredArray.length);
+        // console.log('selectedMonth 变化:', selectedMonth);
+        // console.log('filteredArray 长度:', filteredArray.length);
     }, [selectedMonth, filteredArray]);
+
+    useEffect(() => {
+        console.log(category + '传过来的是啥');
+    }, [category])
 
     return (
         <Layout>
@@ -97,6 +101,7 @@ function Statistics() {
                 <CategorySection value={category}
                     onChange={value => setCategory(value)} />
             </CategoryWrapper>
+
 
             <ChartPage category={category} onChange={handleMonthChange} />
 
@@ -135,7 +140,7 @@ function Statistics() {
                     )
                 ) : (
                     <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-                        {selectedMonth ? `没有找到${selectedMonth}月的数据` : '请选择月份'}
+                        {filteredArray.length === 0 ? `没有找到${selectedMonth}月的数据，快去计一笔吧` : null}
                     </div>
                 )}
             </div>

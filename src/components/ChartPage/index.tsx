@@ -7,6 +7,9 @@ import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
     font-size: 18px;
+    >select{
+        font-size: 14px;
+    }
 `
 
 day.extend(utc);
@@ -21,7 +24,7 @@ type Props = {
 type TotalCost = { month: string, total: number }[]
 export function ChartPage({ category, onChange }: Props) {
 
-
+    console.log('加还是减少' + category);
     //选择月份，默认十月
     const [selectedMonth, setSelectedMonth] = useState('10');
     // 处理月份变化
@@ -33,7 +36,7 @@ export function ChartPage({ category, onChange }: Props) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const myChartRef = React.useRef<echarts.ECharts | null>(null);
 
-    const [calculate, setCalculate] = useState({ '+': '收入', '-': '支出' })
+    const categoryMap = { '-': '支出', '+': '收入', }
     const [totalCost, setTotalCost] = useState<TotalCost>([])
 
     const { records } = useRecords();
@@ -94,6 +97,7 @@ export function ChartPage({ category, onChange }: Props) {
 
     //计算总收入/总支出
     useEffect(() => {
+        // setCalculate{calculate[category]}
         const arr: any = [];
 
         for (let i = 1; i <= 12; i++) {
@@ -195,7 +199,7 @@ export function ChartPage({ category, onChange }: Props) {
     return (
         <div className="p-4">
             <h2 className="text-lg font-bold mb-4">
-                本月总{calculate[category]}: {
+                本月总{categoryMap[category]}: {
                     totalCost && totalCost[Number(selectedMonth) - 1]
                         ? totalCost[Number(selectedMonth) - 1].total
                         : 0
@@ -214,11 +218,23 @@ export function ChartPage({ category, onChange }: Props) {
                 </select>
             </MonthChooseWrapper>
 
-            <div>
-
+            {/* 添加滚动容器 */}
+            <div style={{
+                width: '100%',
+                overflowX: 'auto',
+                border: '1px solid #e0e0e0', // 可选：添加边框以便看清滚动区域
+                borderRadius: '4px' // 可选：圆角
+            }}>
+                {/* 设置图表容器宽度为320% */}
+                <div
+                    ref={chartRef}
+                    style={{
+                        width: '320%',
+                        height: '400px',
+                        minWidth: '100%' // 确保最小宽度为100%
+                    }}
+                />
             </div>
-
-            <div ref={chartRef} style={{ width: '100%', height: '400px' }} />
         </div>
     );
 }

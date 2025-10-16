@@ -11,12 +11,16 @@ const Wrapper = styled.section`
             text-align: center;
             padding: 16px 0;
             position: relative;
+            background: #dadada;
             //设置底部线条，表示收入或者支出
+            /* &.selected{
+                background: orange;
+            } */
             &.selected::after{
                 content: '';
                 display: block;
                 height: 3px;
-                background: #333;
+                background: #f89c41;
                 position: absolute;
                 bottom: 0;
                 width: 100%;
@@ -30,7 +34,7 @@ type Props = {
     onChange: (value: '+' | '-') => void
 }
 const CategorySection: React.FC<Props> = (props) => {
-    const categoryMap = { "+": "支出", "-": "收入" }
+    const categoryMap = { "-": "支出", "+": "收入" }
     const [categoryList] = useState<('+' | '-')[]>(['+', '-'])
     const category = props.value
     return (

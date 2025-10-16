@@ -29,7 +29,9 @@ const InputWrapper = styled.div`
     padding: 0 16px;
     margin-top: 8px;
 `
-
+const Interupt = styled.div`
+    
+`
 // type Params = {
 // id: string
 // }
@@ -84,11 +86,12 @@ const Tag: React.FC = () => {
                 <SmallIcon></SmallIcon>
             </Topbar>
 
-            {tag ? tagContent(tag) : <Center>tag不存在</Center>}
+            {tag ? tagContent(tag) : <Center> <div style={{ marginTop: '70px' }}>标签不存在</div>
+            </Center>}
 
 
 
-        </Layout>
+        </Layout >
 
     )
 }
