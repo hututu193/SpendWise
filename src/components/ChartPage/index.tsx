@@ -113,7 +113,7 @@ export function ChartPage({ category, onChange }: Props) {
         // console.log('arr' + JSON.stringify(arr));
         setTotalCost(JSON.parse(JSON.stringify(arr)))
         console.log(totalCost);
-    }, [monthlyData])
+    }, [monthlyData, totalCost])
 
     // 当月份变化时更新图表
     useEffect(() => {

@@ -29,9 +29,7 @@ const InputWrapper = styled.div`
     padding: 0 16px;
     margin-top: 8px;
 `
-const Interupt = styled.div`
-    
-`
+
 // type Params = {
 // id: string
 // }
