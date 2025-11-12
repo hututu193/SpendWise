@@ -59,7 +59,7 @@ function Statistics() {
   // 构建hash数据
   selectedRecords.forEach(r => {
 
-    console.log('creaar' + r.date);
+    // console.log('creaar' + r.date);
 
 
     const dateObj = day(r.date);
@@ -99,9 +99,6 @@ function Statistics() {
     // console.log('filteredArray 长度:', filteredArray.length);
   }, [selectedMonth, filteredArray]);
 
-  useEffect(() => {
-    console.log(category + '传过来的是啥');
-  }, [category])
 
   return (
     <Layout>

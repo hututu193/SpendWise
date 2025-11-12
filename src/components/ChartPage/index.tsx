@@ -42,7 +42,7 @@ export function ChartPage({ category, onChange }: Props) {
 
     const { records } = useRecords();
 
-    console.log(records);
+    // console.log(records);
 
     // 初始化 monthlyData
     const initializeMonthlyData = (): MonthlyData => {
@@ -93,7 +93,7 @@ export function ChartPage({ category, onChange }: Props) {
         });
         setMonthlyData(newMonthlyData);
 
-        console.log('最终 monthlyData:', newMonthlyData);
+        // console.log('最终 monthlyData:', newMonthlyData);
 
 
     }, [records, category]);
