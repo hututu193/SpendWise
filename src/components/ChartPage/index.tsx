@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as echarts from 'echarts';
 import { useRecords } from 'hooks/useRecords';
 import day from 'dayjs'
@@ -34,8 +34,11 @@ export function ChartPage({ category, onChange }: Props) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const myChartRef = React.useRef<echarts.ECharts | null>(null);
 
-    const categoryMap = { '-': '支出', '+': '收入', }
-    const [totalCost, setTotalCost] = useState<TotalCost>([])
+    const titleMap = {
+        '-': '本月总支出',
+        '+': '本月总收入'
+    };
+
 
     const { records } = useRecords();
 
@@ -96,24 +99,17 @@ export function ChartPage({ category, onChange }: Props) {
     }, [records, category]);
 
     //计算总收入/总支出
-    useEffect(() => {
-        // setCalculate{calculate[category]}
-        const arr: any = [];
-
+    const totalCost = useMemo(() => {
+        const arr: TotalCost = [];
         for (let i = 1; i <= 12; i++) {
             const monthKey = i.toString();
-
             const sumWithInitial = monthlyData[monthKey].reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
+                (accumulator, currentValue) => accumulator + currentValue, 0
             );
             arr.push({ month: monthKey, total: sumWithInitial });
-
         }
-        // console.log('arr' + JSON.stringify(arr));
-        // setTotalCost(JSON.parse(JSON.stringify(arr)))
-        // console.log(totalCost);
-    }, [monthlyData])
+        return arr;
+    }, [monthlyData]);
 
     // 当月份变化时更新图表
     useEffect(() => {
@@ -199,7 +195,7 @@ export function ChartPage({ category, onChange }: Props) {
     return (
         <div className="p-4">
             <h2 className="text-lg font-bold mb-4">
-                本月总{categoryMap[category]}: {
+                {titleMap[category]}: {
                     totalCost && totalCost[Number(selectedMonth) - 1]
                         ? totalCost[Number(selectedMonth) - 1].total
                         : 0
