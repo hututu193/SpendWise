@@ -30,9 +30,6 @@ const InputWrapper = styled.div`
     margin-top: 8px;
 `
 
-// type Params = {
-// id: string
-// }
 
 const Tag: React.FC = () => {
     const { findTag, updateTag, deleteTag } = useTags()

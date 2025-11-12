@@ -6,8 +6,10 @@ import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
     font-size: 18px;
+    padding: 6px ;
     >select{
-        font-size: 14px;
+        font-size: 16px;
+        padding: 1px 2px;
     }
 `
 
@@ -23,8 +25,14 @@ type TotalCost = { month: string, total: number }[]
 export function ChartPage({ category, onChange }: Props) {
 
     // console.log('加还是减少' + category);
-    //选择月份，默认十月
-    const [selectedMonth, setSelectedMonth] = useState('10');
+
+    const getCurrentMonth = () => {
+        const currentMonth = new Date().getMonth() + 1; // 月份从0开始，所以+1
+        return currentMonth.toString();
+    };
+
+    // 选择月份，默认设置为当前月份
+    const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
     // 处理月份变化
     const handleMonthChange = (month: string) => {
         setSelectedMonth(month);
@@ -202,7 +210,7 @@ export function ChartPage({ category, onChange }: Props) {
                 } 元
             </h2>
             <MonthChooseWrapper className="mb-4">
-                <label className="mr-2">选择月份：</label>
+                <label className="mr-2" >选择月份：</label>
                 <select
                     value={selectedMonth}
                     onChange={(e) => handleMonthChange(e.target.value)}
@@ -226,11 +234,12 @@ export function ChartPage({ category, onChange }: Props) {
                     ref={chartRef}
                     style={{
                         width: '320%',
-                        height: '400px',
-                        minWidth: '100%' // 确保最小宽度为100%
+                        height: '30vh',
+                        minWidth: '100%', // 确保最小宽度为100%
+                        minHeight: '200px' // 设置最小高度
                     }}
                 />
             </div>
-        </div>
+        </div >
     );
 }

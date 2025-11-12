@@ -27,7 +27,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/tags" replace />} />
           <Route path="/tags" element={<Tags />} />
-          <Route path='/tag/:id' element={<Tag />}></Route>
+          <Route path='/tag/:id' element={<Tag />} />
           <Route path="/money" element={<Money />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="*" element={<NoMatch />} />

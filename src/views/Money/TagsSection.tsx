@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import React from 'react';
 import { useTags } from 'hooks/useTags';
 
+
 const Wrapper = styled.section`
     
     flex-grow: 1;
@@ -54,6 +55,8 @@ const TagsSection: React.FC<Props> = (props) => {
         }
     };
     const getClass = (tagId: number) => selectedTagIds.indexOf(tagId) >= 0 ? 'selected' : '';
+
+
     return (
         <Wrapper>
             <ol>

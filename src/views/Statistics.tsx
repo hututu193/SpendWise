@@ -39,7 +39,11 @@ function Statistics() {
   const [category, setCategory] = useState<'-' | '+'>('-');
   const { records } = useRecords();
   const { getName } = useTags();
-  const [selectedMonth, setSelectedMonth] = useState<string>('10'); // 默认10月，与ChartPage一致
+  const getCurrentMonth = () => {
+    const currentMonth = new Date().getMonth() + 1; // 月份从0开始，所以+1
+    return currentMonth.toString();
+  };
+  const [selectedMonth, setSelectedMonth] = useState<string>(getCurrentMonth); // 默认10月，与ChartPage一致
 
 
 

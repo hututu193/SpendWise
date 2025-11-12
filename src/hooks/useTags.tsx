@@ -43,7 +43,7 @@ const useTags = () => { // 封装一个自定义 Hook
     };
 
     const addTag = () => {
-        console.log('hi');
+        // console.log('hi');
         const tagName = window.prompt('新标签的名称为');
         if (tagName !== null && tagName !== '') {
             setTags([...tags, { id: createId(), name: tagName }]);
