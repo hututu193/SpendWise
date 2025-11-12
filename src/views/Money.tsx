@@ -8,6 +8,7 @@ import { TagsSection } from './Money/TagsSection';
 import { CategorySection } from './Money/CategorySection';
 import { NoteSection } from './Money/NoteSection';
 import { NumberPadSection } from './Money/NumberPadSection'
+import { DateSection } from './Money/DateSection'
 
 
 
@@ -19,13 +20,13 @@ const defaultFormData = {
     tagIds: [] as number[],
     note: '',
     category: '-' as Category,
-    amount: 0
+    amount: 0,
+    date: new Date().toISOString().split('T')[0] // 改为字符串格式，默认今天
 };
 
 const CategoryWrapper = styled.div`
     background:#c4c4c4;
 `;
-
 
 type MyLayoutProps = {
     scrollTop?: number;
@@ -49,6 +50,8 @@ function Money() {
         if (addRecord(selected)) {
             alert('保存成功');
             setSelected(defaultFormData);
+        } else {
+            alert('保存失败，请检查金额和标签'); // 添加错误提示
         }
     };
     return (
@@ -56,6 +59,12 @@ function Money() {
             {/* {selected.note} */}
 
             {/* {selected.amount} */}
+            <DateSection
+                value={selected.date}
+                onChange={(date) => onChange({ date })}
+            />
+
+
 
             <TagsSection
                 value={selected.tagIds}

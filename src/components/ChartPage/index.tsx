@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import * as echarts from 'echarts';
 import { useRecords } from 'hooks/useRecords';
 import day from 'dayjs'
-import utc from 'dayjs/plugin/utc';
 import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
@@ -12,7 +11,6 @@ const MonthChooseWrapper = styled.div`
     }
 `
 
-day.extend(utc);
 
 interface MonthlyData {
     [month: string]: number[];
@@ -24,7 +22,7 @@ type Props = {
 type TotalCost = { month: string, total: number }[]
 export function ChartPage({ category, onChange }: Props) {
 
-    console.log('加还是减少' + category);
+    // console.log('加还是减少' + category);
     //选择月份，默认十月
     const [selectedMonth, setSelectedMonth] = useState('10');
     // 处理月份变化
@@ -40,6 +38,8 @@ export function ChartPage({ category, onChange }: Props) {
     const [totalCost, setTotalCost] = useState<TotalCost>([])
 
     const { records } = useRecords();
+
+    console.log(records);
 
     // 初始化 monthlyData
     const initializeMonthlyData = (): MonthlyData => {
@@ -60,8 +60,8 @@ export function ChartPage({ category, onChange }: Props) {
 
         // 按日期分组
         selectedRecords.forEach((r) => {
-            const utcDate = day(r.createdAt).utc();
-            const key = utcDate.format('M-D'); // 如 '10-14'
+            const dateObj = day(r.date)
+            const key = dateObj.format('M-D'); // 如 '10-14'
             if (!(key in hash)) {
                 hash[key] = [];
             }
@@ -111,9 +111,9 @@ export function ChartPage({ category, onChange }: Props) {
 
         }
         // console.log('arr' + JSON.stringify(arr));
-        setTotalCost(JSON.parse(JSON.stringify(arr)))
-        console.log(totalCost);
-    }, [monthlyData, totalCost])
+        // setTotalCost(JSON.parse(JSON.stringify(arr)))
+        // console.log(totalCost);
+    }, [monthlyData])
 
     // 当月份变化时更新图表
     useEffect(() => {
