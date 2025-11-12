@@ -7,7 +7,7 @@ const Wrapper = styled.section`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f0f0f0;
+  border: 1px solid #f5f5f5;
   min-height: 60px; // 确保有足够的高度
 `;
 
@@ -16,6 +16,7 @@ const DateDisplay = styled.div`
   align-items: center;
   gap: 10px;
   font-size: 16px;
+  
 `;
 
 const DateInput = styled.input`
@@ -23,6 +24,8 @@ const DateInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
+  
+  
   
   &:focus {
     outline: none;
