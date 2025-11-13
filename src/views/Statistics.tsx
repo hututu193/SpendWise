@@ -5,7 +5,6 @@ import { CategorySection } from './Money/CategorySection';
 import styled from 'styled-components';
 import { RecordItem, useRecords } from '../hooks/useRecords';
 import { useTags } from '../hooks/useTags';
-import { useMonth } from 'hooks/useMonth'; // 确保路径正确
 import day from 'dayjs';
 import { ChartPage } from 'components/ChartPage';
 
@@ -38,8 +37,11 @@ function Statistics() {
   const { records } = useRecords();
   const { getName } = useTags();
 
-  // 使用修复后的 useMonth Hook
-  const { selectedMonth, handleMonthChange } = useMonth();
+  // 月份状态现在由 Statistics 管理
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    return currentMonth.toString().padStart(2, '0');
+  });
 
   const hash: { [K: string]: RecordItem[] } = {};
   const selectedRecords = records.filter(r => r.category === category);
@@ -53,14 +55,13 @@ function Statistics() {
     }
     hash[key].push(r);
   });
-  // console.log(hash);
+
   const array = Object.entries(hash).sort((a, b) => {
     if (a[0] === b[0]) return 0;
     if (a[0] > b[0]) return -1;
     if (a[0] < b[0]) return 1;
     return 0;
   });
-  // console.log('array' + JSON.stringify(array));
 
   // 根据选择的月份过滤数据
   const filteredArray = array.filter(([date]) => {
@@ -79,7 +80,17 @@ function Statistics() {
         />
       </CategoryWrapper>
 
-      <ChartPage category={category} onChange={handleMonthChange} />
+      {/* ChartPage 现在接收月份状态和回调 */}
+      <ChartPage
+        category={category}
+
+        selectedMonth={selectedMonth}
+        onMonthChange={setSelectedMonth}
+      />
+
+      <div style={{ padding: '10px 16px', fontSize: '16px', fontWeight: 'bold' }}>
+        当前显示: {selectedMonth}月
+      </div>
 
       <div>
         {filteredArray.length > 0 ? (
@@ -88,7 +99,7 @@ function Statistics() {
               <Header>{date}</Header>
               <div>
                 {records.map(r => (
-                  <Item key={r.date}>
+                  <Item key={r.id}>
                     <div className="tags oneLine">
                       {r.tagIds
                         .map(tagId => <span key={tagId}>{getName(tagId)}</span>)

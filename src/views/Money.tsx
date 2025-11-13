@@ -9,6 +9,7 @@ import { CategorySection } from './Money/CategorySection';
 import { NoteSection } from './Money/NoteSection';
 import { NumberPadSection } from './Money/NumberPadSection'
 import { DateSection } from './Money/DateSection'
+import { addMonths } from "react-datepicker/dist/date_utils";
 
 
 
@@ -35,6 +36,14 @@ type MyLayoutProps = {
 
 type Category = '-' | '+'
 
+type RecordToAdd = {
+    tagIds: number[]
+    note: string
+    category: '+' | '-'
+    amount: number
+    date: string // YYYY-MM-DD 格式
+}
+
 function Money() {
     const [selected, setSelected] = useState(defaultFormData)
     const { addRecord } = useRecords();
@@ -47,7 +56,14 @@ function Money() {
     }
     //点击OK按钮
     const submit = () => {
-        if (addRecord(selected)) {
+        const recordToAdd: RecordToAdd = {
+            tagIds: selected.tagIds,
+            note: selected.note,
+            category: selected.category,
+            amount: selected.amount,
+            date: selected.date
+        }
+        if (addRecord(recordToAdd)) {
             alert('保存成功');
             setSelected(defaultFormData);
         } else {

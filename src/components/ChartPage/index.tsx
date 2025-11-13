@@ -1,16 +1,16 @@
+// components/ChartPage.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import * as echarts from 'echarts';
 import { useRecords } from 'hooks/useRecords';
-import { useMonth } from 'hooks/useMonth';
 import day from 'dayjs'
 import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
     font-size: 18px;
-    padding: 6px;
+    padding: 6px 6px 6px 12px;
     > select {
         font-size: 16px;
-        padding: 1px 2px;
+        padding: 1px 4px;
     }
 `;
 
@@ -20,12 +20,11 @@ interface MonthlyData {
 
 type Props = {
     category: '-' | '+';
-    onChange: (month: string) => void;
+    selectedMonth: string; // 新增：接收选中的月份
+    onMonthChange: (month: string) => void; // 新增：月份变化回调
 }
 
-export function ChartPage({ category, onChange }: Props) {
-    const { selectedMonth, handleMonthChange, monthOptions } = useMonth();
-
+export function ChartPage({ category, selectedMonth, onMonthChange }: Props) {
     const chartRef = React.useRef<HTMLDivElement>(null);
     const myChartRef = React.useRef<echarts.ECharts | null>(null);
 
@@ -36,18 +35,33 @@ export function ChartPage({ category, onChange }: Props) {
 
     const { records } = useRecords();
 
+    // 月份选项
+    const monthOptions = useMemo(() => {
+        return Array.from({ length: 12 }, (_, i) => i + 1).map(m => ({
+            value: m.toString().padStart(2, '0'),
+            label: `${m}月`
+        }));
+    }, []);
+
+    // 处理月份变化
+    const handleMonthChange = (month: string) => {
+        const formattedMonth = month.padStart(2, '0');
+        onMonthChange(formattedMonth);
+
+    };
+
     // 初始化 monthlyData
     const initializeMonthlyData = (): MonthlyData => {
         const data: MonthlyData = {};
         for (let month = 1; month <= 12; month++) {
-            data[String(month)] = new Array(31).fill(0);
+            data[month.toString()] = new Array(31).fill(0);
         }
         return data;
     };
 
     const [monthlyData, setMonthlyData] = useState<MonthlyData>(initializeMonthlyData);
 
-    // 计算总金额 - 完全避免数字转换问题
+    // 计算总金额
     const currentMonthTotal = useMemo(() => {
         const monthData = monthlyData[selectedMonth];
         if (!monthData) return 0;
@@ -74,21 +88,17 @@ export function ChartPage({ category, onChange }: Props) {
             }
             hash[key].push(r);
         });
-        // console.log('hash' + JSON.stringify(hash));
+
         const array = Object.entries(hash).sort((a, b) => {
             if (a[0] === b[0]) return 0;
             return a[0] > b[0] ? 1 : -1;
         });
 
         const newMonthlyData = initializeMonthlyData();
-        // console.log(newMonthlyData);
 
         array.forEach(([date, records]) => {
-            // console.log(date);
             const [month, day] = date.split('-');
-            // console.log(day);
             const dayIndex = parseInt(day, 10) - 1;
-            // console.log(dayIndex);
             const total = records.reduce((sum: number, item: any) => sum + item.amount, 0);
 
             if (newMonthlyData[month] && dayIndex >= 0 && dayIndex < 31) {
@@ -97,12 +107,6 @@ export function ChartPage({ category, onChange }: Props) {
         });
         setMonthlyData(newMonthlyData);
     }, [records, category]);
-
-    // 处理月份变化的包装函数
-    const handleMonthChangeWrapper = (month: string) => {
-        const formattedMonth = handleMonthChange(month);
-        onChange(formattedMonth);
-    };
 
     // 当月份变化时更新图表
     useEffect(() => {
@@ -178,18 +182,19 @@ export function ChartPage({ category, onChange }: Props) {
 
     return (
         <div className="p-4">
-            <h2 className="text-lg font-bold mb-4">
+            <h2 className="text-lg font-bold mb-4" style={{ padding: '8px 6px 4px 12px' }}>
                 {titleMap[category]}: {currentMonthTotal} 元
             </h2>
             <MonthChooseWrapper className="mb-4">
                 <label className="mr-2">选择月份：</label>
                 <select
                     value={selectedMonth}
-                    onChange={(e) => handleMonthChangeWrapper(e.target.value)}
+                    onChange={(e) => handleMonthChange(e.target.value)}
                     className="border rounded p-1"
                 >
                     {monthOptions.map(({ value, label }) => (
-                        <option key={value} value={value}>{label}</option>
+                        <option key={value} value={value}
+                            style={{ padding: '0' }}>{label}</option>
                     ))}
                 </select>
             </MonthChooseWrapper>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUpdate } from './useUpdate';
 
 export type RecordItem = {
+    id?: string
     tagIds: number[]
     note: string
     category: '+' | '-'
@@ -16,11 +17,19 @@ export const useRecords = () => {
         try {
             const storedRecords = window.localStorage.getItem('records');
             if (storedRecords) {
-                const parsedRecords = JSON.parse(storedRecords);
-                // 基本数据验证
-                if (Array.isArray(parsedRecords)) {
-                    setRecords(parsedRecords);
-                }
+                const parsedRecords = JSON.parse(storedRecords) as (RecordItem & { id?: string })[];
+                // 为旧数据添加 ID（如果缺失）
+                const recordsWithId = parsedRecords.map(record => {
+                    if (!record.id) {
+                        return {
+                            ...record,
+                            id: generateUniqueId()
+                        }
+                    }
+                    return record
+                })
+                setRecords(recordsWithId)
+
             }
         } catch (error) {
             console.error('读取本地存储记录失败:', error);
@@ -52,7 +61,12 @@ export const useRecords = () => {
             return false;
         }
 
-        setRecords([...records, newRecord]);
+        const record: RecordItem = {
+            ...newRecord,
+            id: generateUniqueId()
+        }
+
+        setRecords([...records, record]);
         return true;
     };
 
@@ -64,6 +78,13 @@ export const useRecords = () => {
         const date = new Date(dateString);
         return date instanceof Date && !isNaN(date.getTime());
     };
+
+
+    // 生成唯一 ID 的函数
+    const generateUniqueId = (): string => {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    };
+
 
     return { records, addRecord };
 };
