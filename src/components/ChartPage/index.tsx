@@ -1,43 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as echarts from 'echarts';
 import { useRecords } from 'hooks/useRecords';
+import { useMonth } from 'hooks/useMonth';
 import day from 'dayjs'
 import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
     font-size: 18px;
-    padding: 6px ;
-    >select{
+    padding: 6px;
+    > select {
         font-size: 16px;
         padding: 1px 2px;
     }
-`
-
+`;
 
 interface MonthlyData {
     [month: string]: number[];
 }
+
 type Props = {
     category: '-' | '+';
-    onChange: (month: string) => void // 修改：接收月份参数
+    onChange: (month: string) => void;
 }
-type TotalCost = { month: string, total: number }[]
+
 export function ChartPage({ category, onChange }: Props) {
-
-    // console.log('加还是减少' + category);
-
-    const getCurrentMonth = () => {
-        const currentMonth = new Date().getMonth() + 1; // 月份从0开始，所以+1
-        return currentMonth.toString();
-    };
-
-    // 选择月份，默认设置为当前月份
-    const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
-    // 处理月份变化
-    const handleMonthChange = (month: string) => {
-        setSelectedMonth(month);
-        onChange(month); // 调用父组件的回调函数
-    };
+    const { selectedMonth, handleMonthChange, monthOptions } = useMonth();
 
     const chartRef = React.useRef<HTMLDivElement>(null);
     const myChartRef = React.useRef<echarts.ECharts | null>(null);
@@ -47,52 +34,61 @@ export function ChartPage({ category, onChange }: Props) {
         '+': '本月总收入'
     };
 
-
     const { records } = useRecords();
-
-    // console.log(records);
 
     // 初始化 monthlyData
     const initializeMonthlyData = (): MonthlyData => {
         const data: MonthlyData = {};
         for (let month = 1; month <= 12; month++) {
-            data[month.toString()] = new Array(31).fill(0); // 每月最多31天
+            data[String(month)] = new Array(31).fill(0);
         }
         return data;
     };
 
     const [monthlyData, setMonthlyData] = useState<MonthlyData>(initializeMonthlyData);
-    //获取monthlyData
+
+    // 计算总金额 - 完全避免数字转换问题
+    const currentMonthTotal = useMemo(() => {
+        const monthData = monthlyData[selectedMonth];
+        if (!monthData) return 0;
+
+        let total = 0;
+        for (let i = 0; i < monthData.length; i++) {
+            total += monthData[i];
+        }
+        return total;
+    }, [monthlyData, selectedMonth]);
+
+    // 获取 monthlyData
     useEffect(() => {
         if (records.length === 0) return;
 
-        let hash: { [key: string]: any[] } = {};
+        const hash: { [key: string]: any[] } = {};
         const selectedRecords = records.filter(r => r.category === category);
 
-        // 按日期分组
         selectedRecords.forEach((r) => {
             const dateObj = day(r.date)
-            const key = dateObj.format('M-D'); // 如 '10-14'
+            const key = dateObj.format('M-D');
             if (!(key in hash)) {
                 hash[key] = [];
             }
             hash[key].push(r);
         });
-
-        // 转换为数组并排序
+        // console.log('hash' + JSON.stringify(hash));
         const array = Object.entries(hash).sort((a, b) => {
             if (a[0] === b[0]) return 0;
             return a[0] > b[0] ? 1 : -1;
         });
 
-        // console.log('分组数据:', array);
-
-        // 处理数据填充
         const newMonthlyData = initializeMonthlyData();
+        // console.log(newMonthlyData);
 
         array.forEach(([date, records]) => {
+            // console.log(date);
             const [month, day] = date.split('-');
-            const dayIndex = parseInt(day) - 1; // 0-based 索引
+            // console.log(day);
+            const dayIndex = parseInt(day, 10) - 1;
+            // console.log(dayIndex);
             const total = records.reduce((sum: number, item: any) => sum + item.amount, 0);
 
             if (newMonthlyData[month] && dayIndex >= 0 && dayIndex < 31) {
@@ -100,51 +96,36 @@ export function ChartPage({ category, onChange }: Props) {
             }
         });
         setMonthlyData(newMonthlyData);
-
-        // console.log('最终 monthlyData:', newMonthlyData);
-
-
     }, [records, category]);
 
-    //计算总收入/总支出
-    const totalCost = useMemo(() => {
-        const arr: TotalCost = [];
-        for (let i = 1; i <= 12; i++) {
-            const monthKey = i.toString();
-            const sumWithInitial = monthlyData[monthKey].reduce(
-                (accumulator, currentValue) => accumulator + currentValue, 0
-            );
-            arr.push({ month: monthKey, total: sumWithInitial });
-        }
-        return arr;
-    }, [monthlyData]);
+    // 处理月份变化的包装函数
+    const handleMonthChangeWrapper = (month: string) => {
+        const formattedMonth = handleMonthChange(month);
+        onChange(formattedMonth);
+    };
 
     // 当月份变化时更新图表
     useEffect(() => {
         if (!chartRef.current) return;
 
-        // 初始化图表实例
         if (!myChartRef.current) {
             myChartRef.current = echarts.init(chartRef.current);
         }
 
         const getDaysInMonth = (month: string) => {
-            const monthNum = parseInt(month);
-            // 简单判断，实际应该考虑闰年
+            const monthNum = parseInt(month, 10);
             const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
             return daysInMonth[monthNum - 1] || 30;
         };
 
         const daysInSelectedMonth = getDaysInMonth(selectedMonth);
         const rawData = monthlyData[selectedMonth] || Array(daysInSelectedMonth).fill(0);
-        const data = rawData.slice(0, daysInSelectedMonth); // 只取实际天数的数据
+        const data = rawData.slice(0, daysInSelectedMonth);
         const days = Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1);
-
-        // console.log(`月份: ${selectedMonth}, 天数: ${daysInSelectedMonth}, 数据:`, data);
 
         const option: echarts.EChartsOption = {
             title: {
-                text: `${selectedMonth}月每日支出趋势 (共${daysInSelectedMonth}天)`,
+                text: `${selectedMonth}月每日${category === '-' ? '支出' : '收入'}趋势 (共${daysInSelectedMonth}天)`,
                 left: 'center',
             },
             tooltip: {
@@ -156,7 +137,7 @@ export function ChartPage({ category, onChange }: Props) {
                 }
             },
             grid: {
-                left: '3%',   // 调整左边距，为y轴标签留出空间
+                left: '3%',
                 right: '4%',
                 bottom: '3%',
                 containLabel: true
@@ -183,10 +164,8 @@ export function ChartPage({ category, onChange }: Props) {
             ],
         };
 
-        // 关键：设置图表选项
         myChartRef.current.setOption(option);
 
-        // 添加窗口大小变化监听
         const handleResize = () => {
             myChartRef.current?.resize();
         };
@@ -194,52 +173,43 @@ export function ChartPage({ category, onChange }: Props) {
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            // 注意：这里不要dispose，否则切换月份时会销毁图表
-            // myChartRef.current?.dispose();
-            // myChartRef.current = null;
         };
-    }, [selectedMonth, monthlyData]);
+    }, [selectedMonth, monthlyData, category]);
 
     return (
         <div className="p-4">
             <h2 className="text-lg font-bold mb-4">
-                {titleMap[category]}: {
-                    totalCost && totalCost[Number(selectedMonth) - 1]
-                        ? totalCost[Number(selectedMonth) - 1].total
-                        : 0
-                } 元
+                {titleMap[category]}: {currentMonthTotal} 元
             </h2>
             <MonthChooseWrapper className="mb-4">
-                <label className="mr-2" >选择月份：</label>
+                <label className="mr-2">选择月份：</label>
                 <select
                     value={selectedMonth}
-                    onChange={(e) => handleMonthChange(e.target.value)}
+                    onChange={(e) => handleMonthChangeWrapper(e.target.value)}
                     className="border rounded p-1"
                 >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                        <option key={m} value={m.toString()}>{m}月</option>
+                    {monthOptions.map(({ value, label }) => (
+                        <option key={value} value={value}>{label}</option>
                     ))}
                 </select>
             </MonthChooseWrapper>
 
-            {/* 添加滚动容器 */}
             <div style={{
                 width: '100%',
                 overflowX: 'auto',
-                border: '1px solid #e0e0e0', // 可选：添加边框以便看清滚动区域
-                borderRadius: '4px' // 可选：圆角
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px'
             }}>
-                {/* 设置图表容器宽度为320% */}
                 <div
                     ref={chartRef}
                     style={{
                         width: '320%',
                         height: '30vh',
-                        minWidth: '100%', // 确保最小宽度为100%
-                        minHeight: '200px' // 设置最小高度
+                        minWidth: '100%',
+                        minHeight: '200px'
                     }}
                 />
             </div>
-        </div >
+        </div>
     );
 }
