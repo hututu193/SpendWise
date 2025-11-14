@@ -1,6 +1,6 @@
 // views/Statistics.tsx
 import Layout from '../components/Layout';
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState } from 'react';
 import { CategorySection } from './Money/CategorySection';
 import styled from 'styled-components';
 import { RecordItem, useRecords } from '../hooks/useRecords';

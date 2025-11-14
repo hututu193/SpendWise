@@ -9,8 +9,6 @@ import { CategorySection } from './Money/CategorySection';
 import { NoteSection } from './Money/NoteSection';
 import { NumberPadSection } from './Money/NumberPadSection'
 import { DateSection } from './Money/DateSection'
-import { addMonths } from "react-datepicker/dist/date_utils";
-
 
 
 const MyLayout = styled(Layout) <MyLayoutProps>`
