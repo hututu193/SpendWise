@@ -88,7 +88,7 @@ function Statistics() {
         onMonthChange={setSelectedMonth}
       />
 
-      <div style={{ padding: '10px 16px', fontSize: '16px', fontWeight: 'bold' }}>
+      <div style={{ padding: '10px 16px', fontSize: '16px', color: '#706a6a' }}>
         当前显示: {selectedMonth}月
       </div>
 

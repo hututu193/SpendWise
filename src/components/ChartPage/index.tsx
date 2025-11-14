@@ -7,12 +7,21 @@ import styled from 'styled-components';
 
 const MonthChooseWrapper = styled.div`
     font-size: 18px;
-    padding: 6px 6px 6px 12px;
+    padding: 2px 6px 6px 12px;
     > select {
         font-size: 16px;
         padding: 1px 4px;
     }
 `;
+
+const CalTotal = styled.h2`
+  padding: 8px 6px 0 12px !important;
+  font-size: 16px;
+  font-weight: normal;
+  margin-bottom: 6px;
+  color: rgb(67, 64, 64);
+`;
+
 
 interface MonthlyData {
     [month: string]: number[];
@@ -182,9 +191,10 @@ export function ChartPage({ category, selectedMonth, onMonthChange }: Props) {
 
     return (
         <div className="p-4">
-            <h2 className="text-lg font-bold mb-4" style={{ padding: '8px 6px 4px 12px' }}>
+            <CalTotal>
                 {titleMap[category]}: {currentMonthTotal} 元
-            </h2>
+            </CalTotal>
+
             <MonthChooseWrapper className="mb-4">
                 <label className="mr-2">选择月份：</label>
                 <select
