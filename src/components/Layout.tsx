@@ -3,32 +3,39 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  height: 100vh;
-  display:flex;
+  /* 🌟 核心修复在这里 */
+  height: 100vh;       /* 兼容旧浏览器 */
+  height: 100dvh;      /* 适配移动端：自动减去地址栏高度 */
+  
+  display: flex;
   flex-direction: column;
+  overflow: hidden;    /* 防止整个页面出现滚动条，只让 Main 滚 */
+  background-color: #f7f9fc; /* 配合咱们的新风格，给个浅背景 */
 `;
+
 const Main = styled.div`
   flex-grow: 1;
-  overflow: auto;
-  /* 隐藏所有浏览器的滚动条 */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;      /* Firefox */
+  overflow-y: auto;    /* 只有中间这块区域能滚动 */
   
-  /* Chrome, Safari and Opera */
+  /* 隐藏滚动条样式保持不变 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
   }
 `;
-// 完整的 Props 类型定义
+
 type Props = {
   className?: string;
   scrollTop?: number;
-  children: React.ReactNode; // 添加 children 类型
+  children: React.ReactNode;
 }
+
 const Layout: React.FC<Props> = (props) => {
   const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // 这里保留你原来的逻辑，延迟设置滚动位置
     setTimeout(() => {
       if (mainRef.current && props.scrollTop !== undefined) {
         mainRef.current.scrollTop = props.scrollTop
@@ -38,14 +45,12 @@ const Layout: React.FC<Props> = (props) => {
 
   return (
     <Wrapper>
-      <Main ref={mainRef} className={props.className} data-x={'frank'}>
+      <Main ref={mainRef} className={props.className}>
         {props.children}
       </Main>
       <Nav />
     </Wrapper>
   );
 };
-
-
 
 export default Layout;

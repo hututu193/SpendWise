@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { createId } from 'lib/createId';
 import { useUpdate } from './useUpdate';
 
-const useTags = () => { // 封装一个自定义 Hook
+const useTags = () => {
     const [tags, setTags] = useState<{ id: number; name: string }[]>([]);
+
     useEffect(() => {
         let localTags = JSON.parse(window.localStorage.getItem('tags') || '[]');
         if (localTags.length === 0) {
@@ -16,11 +17,12 @@ const useTags = () => { // 封装一个自定义 Hook
             ];
         }
         setTags(localTags);
+    }, []);
 
-    }, []); // 组件挂载时执行
     useUpdate(() => {
         window.localStorage.setItem('tags', JSON.stringify(tags));
     }, tags);
+
     const findTag = (id: number) => tags.filter(tag => tag.id === id)[0];
 
     const findTagIndex = (id: number) => {
@@ -42,12 +44,9 @@ const useTags = () => { // 封装一个自定义 Hook
         setTags(tags.filter(tag => tag.id !== id));
     };
 
-    const addTag = () => {
-        // console.log('hi');
-        const tagName = window.prompt('新标签的名称为');
-        if (tagName !== null && tagName !== '') {
-            setTags([...tags, { id: createId(), name: tagName }]);
-        }
+    // 🌟 核心修改：这里不再弹窗，只负责接收 name 并添加
+    const addTag = (name: string) => {
+        setTags([...tags, { id: createId(), name: name }]);
     };
 
     const getName = (id: number) => {

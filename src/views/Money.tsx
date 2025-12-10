@@ -11,10 +11,14 @@ import { NumberPadSection } from './Money/NumberPadSection'
 import { DateSection } from './Money/DateSection'
 
 
-const MyLayout = styled(Layout) <MyLayoutProps>`
-    display: flex;
-    flex-direction: column;
-`
+// Money.tsx 的样式部分修改
+const MyLayout = styled(Layout)<MyLayoutProps>`
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 占满全屏 */
+  background: #fff;
+`;
+
 const defaultFormData = {
     tagIds: [] as number[],
     note: '',
@@ -23,9 +27,9 @@ const defaultFormData = {
     date: new Date().toISOString().split('T')[0] // 改为字符串格式，默认今天
 };
 
-const CategoryWrapper = styled.div`
-    background:#c4c4c4;
-`;
+// const CategoryWrapper = styled.div`
+//     background: #c4c4c4;
+// `;
 
 type MyLayoutProps = {
     scrollTop?: number;
@@ -68,43 +72,45 @@ function Money() {
             alert('保存失败，请检查金额和标签'); // 添加错误提示
         }
     };
-    return (
+    return(
+
         <MyLayout scrollTop={9999}>
-            {/* {selected.note} */}
+      
+        {/* 1. 顶部：分类切换 */}
+        {/* 直接放 CategorySection，因为它自带了 wrapper 样式 */}
+        <CategorySection
+          value={selected.category}
+          onChange={(category) => onChange({ category })}
+        />
+  
+        {/* 2. 中间：标签选择 (让它 flex-grow: 1 占据中间空位) */}
+        <TagsSection
+          value={selected.tagIds}
+          onChange={(tagIds) => onChange({ tagIds })}
+        />
+  
+        {/* 3. 底部信息区：日期 + 备注 */}
+        <div style={{ background: '#fff' }}>
+          <DateSection
+            value={selected.date}
+            onChange={(date) => onChange({ date })}
+          />
+          <NoteSection
+            value={selected.note}
+            onChange={(note) => onChange({ note })}
+          />
+        </div>
+  
+        {/* 4. 最底部：数字键盘 */}
+        <NumberPadSection
+          value={selected.amount}
+          onChange={(amount) => onChange({ amount })}
+          onOK={submit}
+        />
+        
+      </MyLayout>
+    );
+  }
 
-            {/* {selected.amount} */}
-            <DateSection
-                value={selected.date}
-                onChange={(date) => onChange({ date })}
-            />
-
-
-
-            <TagsSection
-                value={selected.tagIds}
-                onChange={(tagIds) => onChange({ tagIds })} />
-
-            {/* 备注 */}
-            <NoteSection
-                value={selected.note}
-                onChange={note => onChange({ note })}
-            />
-
-            {/* 收入支出 */}
-            <CategoryWrapper>
-                <CategorySection value={selected.category}
-                    onChange={category => onChange({ category })} />
-            </CategoryWrapper>
-
-            {/* 数字键盘 */}
-            <NumberPadSection
-                value={selected.amount}
-                onChange={(amount) => onChange({ amount })}
-                onOK={submit}
-            />
-
-        </MyLayout>
-    )
-}
 
 export default Money
