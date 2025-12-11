@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;    /* 防止整个页面出现滚动条，只让 Main 滚 */
-  background-color: #f7f9fc; /* 配合咱们的新风格，给个浅背景 */
+  background-color: #f7f9fc; 
 `;
 
 const Main = styled.div`

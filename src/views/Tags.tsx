@@ -11,35 +11,62 @@ import CenterModal from "components/CenterModal";
 const SmallIcon = styled(Icon)`
   width: 16px;
   height: 16px;
-  color: #ccc; 
+  color: #c4c4c4; 
 `;
 
-const TagList = styled.div` // 改成 div 方便控制背景
-  background: white;
-  padding-left: 16px; /* 左边留白，像 iOS 那样 */
-  
-  > a {
+// 🌟 核心容器：使用 Flex 布局，把底部按钮顶到底下
+const FlexLayout = styled(Layout)`
+  display: flex;
+  flex-direction: column;
+`;
+
+// 🌟 改造列表：iOS 孤岛风格 (Inset Grouped)
+const TagList = styled.div`
+  flex-grow: 1; /* 占据中间所有空位 */
+  overflow-y: auto; /* 列表内容多时自己滚动 */
+  padding: 16px; /* 给外围留白 */
+
+  /* 列表的卡片容器 */
+  .list-card {
+    background: white;
+    border-radius: 16px; /* 大圆角 */
+    overflow: hidden; /* 保证子元素不溢出圆角 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); /* 极淡的阴影 */
+  }
+
+  /* 列表项 */
+  a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 16px 16px 0; /* 上下加高，方便点击 */
-    border-bottom: 1px solid #f5f5f5; /* 极细的分割线 */
+    padding: 16px; 
+    border-bottom: 1px solid #f5f5f5; 
     font-size: 16px;
     color: #333;
-    text-decoration: none;
+    background: white;
+    transition: background 0.2s;
 
-    /* 最后一个元素去掉分割线 */
+    /* 点击反馈 */
+    &:active {
+      background: #f9f9f9;
+    }
+
+    /* 最后一个去边框 */
     &:last-child {
       border-bottom: none;
     }
   }
 `;
 
-// 给按钮一个独立的容器，不要用 Space 堆了
-const ButtonWrapper = styled.div`
-  padding: 32px;
+// 🌟 底部固定操作栏
+const Footer = styled.div`
+  padding: 20px 16px;
+  background: transparent; /* 或者做成半透明模糊 background: rgba(247,249,252, 0.9); */
   display: flex;
   justify-content: center;
+  /* 适配 iPhone 底部安全区 */
+  padding-bottom: calc(20px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
 `;
 
 const Tags: React.FC = () => {
@@ -52,20 +79,24 @@ const Tags: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <FlexLayout>
       <TagList>
-        {tags.map((tag) => (
-          // 直接用 Link 包裹，扩大点击区域
-          <Link key={tag.id} to={"/tag/" + tag.id}>
-            <span className="oneLine">{tag.name}</span>
-            <SmallIcon name="right" />
-          </Link>
-        ))}
+        <div className="list-card">
+          {tags.map((tag) => (
+            <Link key={tag.id} to={"/tag/" + tag.id}>
+              <span className="oneLine">
+                 {/* 这里预留 Emoji 的位置，比如 tag.icon */}
+                 {tag.name}
+              </span>
+              <SmallIcon name="right" />
+            </Link>
+          ))}
+        </div>
       </TagList>
 
-      <ButtonWrapper>
+      <Footer>
         <Button onClick={() => setVisible(true)}>+ 新建标签</Button>
-      </ButtonWrapper>
+      </Footer>
 
       <CenterModal 
         visible={visible}
@@ -73,7 +104,7 @@ const Tags: React.FC = () => {
         onCancel={() => setVisible(false)}
         onConfirm={submitTag}
       />
-    </Layout>
+    </FlexLayout>
   );
 };
 

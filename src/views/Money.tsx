@@ -66,11 +66,9 @@ function Money() {
             date: selected.date
         }
         if (addRecord(recordToAdd)) {
-            alert('保存成功');
+            
             setSelected(defaultFormData);
-        } else {
-            alert('保存失败，请检查金额和标签'); // 添加错误提示
-        }
+        } 
     };
     return(
 

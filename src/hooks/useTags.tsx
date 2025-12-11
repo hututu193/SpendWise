@@ -9,11 +9,12 @@ const useTags = () => {
         let localTags = JSON.parse(window.localStorage.getItem('tags') || '[]');
         if (localTags.length === 0) {
             localTags = [
-                { id: createId(), name: '餐饮' },
-                { id: createId(), name: '居住' },
-                { id: createId(), name: '娱乐' },
-                { id: createId(), name: '出行' },
-                { id: createId(), name: '工资' },
+                //固定id,方便mock数据
+                { id: 1, name: '餐饮' },
+                { id: 2, name: '居住' },
+                { id: 3, name: '娱乐' },
+                { id: 4, name: '出行' },
+                { id: 5, name: '工资' },
             ];
         }
         setTags(localTags);
