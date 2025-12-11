@@ -71,9 +71,6 @@ const TypeSwitch = styled.div`
     }
 `;
 
-interface MonthlyData {
-  [month: string]: number[];
-}
 
 type Props = {
   category: '-' | '+';

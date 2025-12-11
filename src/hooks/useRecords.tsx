@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useUpdate } from './useUpdate';
 import day from 'dayjs'
 import { toast } from '../components/Toast';
-import { log } from 'console';
 
 export type RecordItem = {
     id?: string
