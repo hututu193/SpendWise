@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/SpendWise/static/css/main.eb5a88ae.css",
-    "main.js": "/SpendWise/static/js/main.e53bdaa5.js",
+    "main.js": "/SpendWise/static/js/main.3245a15d.js",
     "index.html": "/SpendWise/index.html",
     "main.eb5a88ae.css.map": "/SpendWise/static/css/main.eb5a88ae.css.map",
-    "main.e53bdaa5.js.map": "/SpendWise/static/js/main.e53bdaa5.js.map"
+    "main.3245a15d.js.map": "/SpendWise/static/js/main.3245a15d.js.map"
   },
   "entrypoints": [
     "static/css/main.eb5a88ae.css",
-    "static/js/main.e53bdaa5.js"
+    "static/js/main.3245a15d.js"
   ]
 }
