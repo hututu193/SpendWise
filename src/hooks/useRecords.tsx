@@ -9,61 +9,52 @@ export type RecordItem = {
     note: string
     category: '+' | '-'
     amount: number
-    date: string // YYYY-MM-DD
+    date: string
 }
 
-// 📦 1. 定义演示数据生成函数 (生成今天、昨天、前天的数据)
+// 生成演示数据的函数 (固定ID，确保图表好看)
 const generateDemoData = (): RecordItem[] => {
     const today = day().format('YYYY-MM-DD');
     const yesterday = day().subtract(1, 'day').format('YYYY-MM-DD');
     const twoDaysAgo = day().subtract(2, 'day').format('YYYY-MM-DD');
-    const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    const id = () => Math.random().toString(36).slice(2, 9);
 
     return [
-        { id: generateUniqueId(), tagIds: [1], note: '演示数据-午饭', category: '-', amount: 58, date: today },
-        { id: generateUniqueId(), tagIds: [1], note: '演示数据-晚餐火锅', category: '-', amount: 260, date: yesterday },
-        { id: generateUniqueId(), tagIds: [4], note: '演示数据-打车', category: '-', amount: 35, date: today },
-        { id: generateUniqueId(), tagIds: [2], note: '演示数据-房租', category: '-', amount: 2500, date: twoDaysAgo },
-        { id: generateUniqueId(), tagIds: [3], note: '演示数据-看电影', category: '-', amount: 90, date: yesterday },
-        { id: generateUniqueId(), tagIds: [5], note: '演示数据-工资收入', category: '+', amount: 12000, date: twoDaysAgo },
+        { id: id(), tagIds: [1], note: '演示-午饭', category: '-', amount: 39, date: today },
+        { id: id(), tagIds: [1], note: '演示-请客', category: '-', amount: 260, date: yesterday },
+        { id: id(), tagIds: [4], note: '演示-打车', category: '-', amount: 35, date: today },
+        { id: id(), tagIds: [2], note: '演示-房租', category: '-', amount: 2500, date: twoDaysAgo },
+        { id: id(), tagIds: [3], note: '演示-电影', category: '-', amount: 90, date: yesterday },
+        { id: id(), tagIds: [5], note: '演示-工资', category: '+', amount: 12000, date: twoDaysAgo },
     ];
 };
 
 export const useRecords = () => {
     const [records, setRecords] = useState<RecordItem[]>([]);
 
-    const generateUniqueId = (): string => {
-        return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-    };
-
-    // 📦 2. 初始化数据 (核心修改)
     useEffect(() => {
+        const storedRecords = window.localStorage.getItem('records');
         let initialRecords: RecordItem[] = [];
-        try {
-            const storedRecords = window.localStorage.getItem('records');
-            if (storedRecords) {
+
+        // 1. 尝试读取
+        if (storedRecords) {
+            try {
                 initialRecords = JSON.parse(storedRecords);
+            } catch (e) {
+                console.error('解析失败', e);
             }
-        } catch (error) {
-            console.error('读取出错，重置为空', error);
-            initialRecords = [];
         }
 
-        // 🌟🌟🌟 关键判断：如果最终结果是空数组，就注入演示数据 🌟🌟🌟
-        if (initialRecords.length === 0) {
-            console.log('检测到没有数据，正在注入演示数据...');
-            initialRecords = generateDemoData();
-            // 顺便保存到本地，下次刷新就不用再生成了
-            window.localStorage.setItem('records', JSON.stringify(initialRecords));
+        // 2. 🌟 核心修改：如果没数据，或者数据是空的数组，强制注入！
+        if (!initialRecords || initialRecords.length === 0) {
+            console.log('检测到空数据，正在注入演示数据...'); // 你可以在控制台看到这句话
+            const demoData = generateDemoData();
+            setRecords(demoData);
+            window.localStorage.setItem('records', JSON.stringify(demoData));
+        } else {
+            // 正常加载
+            setRecords(initialRecords);
         }
-
-        // 修复旧数据没有 ID 的问题 (兼容性处理)
-        const normalizedRecords = initialRecords.map(r => ({
-            ...r,
-            id: r.id || generateUniqueId()
-        }));
-
-        setRecords(normalizedRecords);
     }, []);
 
     useUpdate(() => {
@@ -74,11 +65,20 @@ export const useRecords = () => {
         if (newRecord.amount <= 0) { toast('请输入金额 💰'); return false; }
         if (newRecord.tagIds.length === 0) { toast('请选择标签 🏷️'); return false; }
         
-        const record = { ...newRecord, id: generateUniqueId() };
+        const record = { ...newRecord, id: Math.random().toString(36).slice(2, 9) };
         setRecords([...records, record]);
         toast('记账成功 🎉');
         return true;
     };
 
-    return { records, addRecord };
+    // 🌟 3. 暴露一个重置方法给 UI 使用
+    const resetData = () => {
+        const demo = generateDemoData();
+        setRecords(demo);
+        window.localStorage.setItem('records', JSON.stringify(demo));
+        toast('已恢复演示数据 🔄');
+        setTimeout(() => window.location.reload(), 1000); // 1秒后刷新页面确保图表更新
+    };
+
+    return { records, addRecord, resetData };
 };

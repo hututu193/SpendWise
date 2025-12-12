@@ -1,4 +1,5 @@
 import Layout from '../components/Layout';
+import { Button } from 'components/Button';
 import { useState, useMemo } from 'react';
 import { CategorySection } from './Money/CategorySection';
 import styled from 'styled-components';
@@ -79,7 +80,7 @@ const RankItem = styled.div`
 
 function Statistics() {
   const [category, setCategory] = useState<'-' | '+'>('-');
-  const { records } = useRecords();
+  const { records, resetData } = useRecords();
   const { getName } = useTags();
 
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -201,6 +202,21 @@ function Statistics() {
           )}
         </div>
       </Wrapper>
+
+      {/* 🌟 2. 在最底部添加这个“急救区” */}
+      <div style={{ textAlign: 'center', padding: '30px', paddingBottom: '50px' }}>
+        {records.length === 0 ? (
+           <>
+             <p style={{ color: '#999', marginBottom: '10px' }}>暂无数据？点击下方按钮体验</p>
+             <Button onClick={resetData}>🔄 注入演示数据</Button>
+           </>
+        ) : (
+           // 如果有数据，也可以放一个不起眼的小按钮，方便重置
+           <div onClick={resetData} style={{ fontSize: '12px', color: '#ccc', marginTop: '20px' }}>
+             [恢复默认演示数据]
+           </div>
+        )}
+      </div>
     </Layout>
   );
 }
